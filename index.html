@@ -264,6 +264,7 @@ body{font-family:"Crimson Pro",Georgia,serif;color:var(--ink);}
         <div class="set-row"><span class="set-row-label">Canon</span><span style="font-family:Cinzel,serif;font-size:12px;color:var(--gold-dark)">Eastern Orthodox</span></div>
         <div class="set-row"><span class="set-row-label">Commentary</span><span style="font-family:Cinzel,serif;font-size:12px;color:var(--gold-dark)">Church Fathers</span></div>
         <div class="set-row"><span class="set-row-label">Verses</span><span style="font-family:Cinzel,serif;font-size:12px;color:var(--gold-dark)">37,936</span></div>
+        <div class="set-row" onclick="openCredits()" style="cursor:pointer"><span class="set-row-label">Credits &amp; Attributions</span><span style="font-family:Cinzel,serif;font-size:12px;color:var(--gold-dark)">View&nbsp;&rsaquo;</span></div>
       </div>
     </div>
   </div>
@@ -310,6 +311,28 @@ body{font-family:"Crimson Pro",Georgia,serif;color:var(--ink);}
       <input type="text" id="search-input" placeholder="e.g. John 3:16 or search a word…" style="width:100%;padding:10px 14px;border:1px solid rgba(139,105,20,0.3);border-radius:10px;font-size:15px;font-family:Crimson Pro,serif;background:var(--parchment);color:var(--ink);outline:none" oninput="doSearch(this.value)">
     </div>
     <div class="sel-list" id="search-results" style="padding:8px 0"></div>
+  </div>
+</div>
+<div class="sel-overlay" id="credits-sel">
+  <div class="sel-sheet" style="max-height:85vh">
+    <div class="sel-hdr"><h2>About &amp; Credits</h2><button onclick="closeSels()">×</button></div>
+    <div class="sel-list" style="padding:18px 20px;line-height:1.55;color:var(--ink);font-family:'Crimson Pro',serif;font-size:calc(15px*var(--fs,1))">
+      <p style="margin:0 0 6px;font-family:Cinzel,serif;font-size:calc(11px*var(--fs,1));letter-spacing:1.5px;color:var(--gold-dark)">SCRIPTURE</p>
+      <p style="margin:0 0 18px">The <b>World English Bible (WEB)</b>, including the Deuterocanonical (Anagignoskomena) books. The WEB is dedicated to the <b>public domain</b>.</p>
+
+      <p style="margin:0 0 6px;font-family:Cinzel,serif;font-size:calc(11px*var(--fs,1));letter-spacing:1.5px;color:var(--gold-dark)">CANON &amp; ORDER</p>
+      <p style="margin:0 0 18px">Books are arranged according to the <b>Eastern Orthodox (Septuagint)</b> canon, with the Anagignoskomena set in their traditional order within the Old Testament.</p>
+
+      <p style="margin:0 0 6px;font-family:Cinzel,serif;font-size:calc(11px*var(--fs,1));letter-spacing:1.5px;color:var(--gold-dark)">PATRISTIC COMMENTARY</p>
+      <p style="margin:0 0 10px">Selections from the Holy Fathers, taken from public-domain English translations:</p>
+      <ul style="margin:0 0 12px;padding-left:18px">
+        <li style="margin-bottom:5px"><i>Nicene and Post-Nicene Fathers</i>, Series I &amp; II, ed. Philip Schaff &amp; Henry Wace (1886&ndash;1900).</li>
+        <li><i>A Library of the Fathers of the Holy Catholic Church</i> (Oxford, 1838&ndash;1885) &mdash; including Pusey &amp; Randell&rsquo;s translation of St.&nbsp;Cyril of Alexandria on St.&nbsp;John.</li>
+      </ul>
+      <p style="margin:0 0 18px">Fathers quoted: St.&nbsp;John Chrysostom, St.&nbsp;Augustine of Hippo, St.&nbsp;Basil the Great, St.&nbsp;Cyril of Alexandria, St.&nbsp;Athanasius the Great, St.&nbsp;Gregory the Theologian, and St.&nbsp;Cyril of Jerusalem. All patristic texts are in the <b>public domain</b>.</p>
+
+      <p style="margin:0;padding-top:14px;border-top:0.5px solid rgba(139,105,20,0.2);font-style:italic;font-size:calc(13px*var(--fs,1));color:var(--ink-light)">This is an independent devotional resource, not affiliated with or endorsed by any ecclesiastical body or Bible publisher.</p>
+    </div>
   </div>
 </div>
 
@@ -531,6 +554,7 @@ function openChSel(){
 }
 function selectChapter(n){chapterNum=n;closeSels();renderChapter();}
 function closeSels(){document.querySelectorAll(".sel-overlay").forEach(o=>o.classList.remove("open"));}
+function openCredits(){document.getElementById("credits-sel").classList.add("open");}
 
 // ── SEARCH ─────────────────────────────────────────────────────
 function openSearch(){
