@@ -88,6 +88,9 @@ body{font-family:"Crimson Pro",Georgia,serif;color:var(--ink);}
 .verse-panel.open{transform:translateX(-50%) translateY(0);}
 .panel-drag{width:40px;height:4px;background:var(--drag);border-radius:2px;margin:12px auto 0;flex-shrink:0;}
 .panel-close{position:absolute;top:12px;right:14px;background:none;border:none;cursor:pointer;color:var(--ink-light);font-size:calc(22px*var(--fs,1));line-height:1;}
+.panel-back{position:absolute;top:11px;left:12px;background:none;border:none;cursor:pointer;color:var(--gold-dark);font-family:"Cinzel",serif;font-size:calc(12px*var(--fs,1));letter-spacing:.5px;line-height:1;padding:2px 4px;display:none;}
+.verse-panel.has-back .panel-back{display:block;}
+.verse-panel.has-back .panel-hdr{padding-top:30px;}
 .panel-hdr{padding:12px 36px 12px 16px;border-bottom:1px solid rgba(139,105,20,0.15);flex-shrink:0;}
 .panel-ref{font-family:"Cinzel",serif;font-size:calc(11px*var(--fs,1));font-weight:600;color:var(--gold-dark);letter-spacing:1px;margin-bottom:4px;}
 .panel-quote{font-family:"IM Fell English",serif;font-size:calc(15px*var(--fs,1));color:var(--ink);line-height:1.6;font-style:italic;}
@@ -279,6 +282,7 @@ body{font-family:"Crimson Pro",Georgia,serif;color:var(--ink);}
 
 <div class="verse-panel" id="verse-panel">
   <div class="panel-drag" id="panel-drag"></div>
+  <button class="panel-back" onclick="navBack()" aria-label="Back to previous verse" title="Back to previous verse">‹ Back</button>
   <button class="panel-close" onclick="closePanel()">×</button>
   <div class="panel-hdr">
     <div class="panel-ref" id="panel-ref"></div>
@@ -350,6 +354,9 @@ const XREF=JSON.parse(atob("eyJHRU4uMS4xIjpbeyJyIjoiSm9obiAxOjEiLCJpZCI6IkpITi4x
 // ── STATE ──────────────────────────────────────────────────────
 let books=Object.entries(BIBLE.books).map(([id,b])=>({id,name:b.name,section:b.section||sec(id),chapterCount:Object.keys(b.chapters||{}).length})).filter(b=>b.chapterCount>0);
 let bookIdx=0,chapterNum=1,selectedVerseId=null,currentPTab="comm";
+let navHistory=[],navigating=false,backNav=false;
+function updateBackBtn(){document.getElementById("verse-panel").classList.toggle("has-back",navHistory.length>0);}
+function navBack(){if(!navHistory.length)return;const vId=navHistory.pop();backNav=true;goToVerse(vId,false);backNav=false;}
 let fontSize=parseInt(localStorage.getItem("ob_font")||"17");
 let theme=localStorage.getItem("ob_theme")||"light";
 let bookmarks=JSON.parse(localStorage.getItem("ob_bookmarks")||"[]");
@@ -444,6 +451,8 @@ function openPanel(vId,num,text,bookName){
   document.getElementById("panel-ref").textContent=bookName+" "+p[1]+":"+p[2];
   document.getElementById("panel-quote").textContent=text;
   switchPTab("comm");
+  if(!navigating)navHistory=[];
+  updateBackBtn();
   document.getElementById("verse-panel").classList.add("open");
 }
 function closePanel(){
@@ -478,7 +487,7 @@ function renderPanelBody(){
   }else if(currentPTab==="xref"){
     const items=XREF[key];
     if(items&&items.length){
-      body.innerHTML=items.map(cr=>`<div class="xref-item" onclick="goToVerse('${cr.id}')"><div class="xref-ref">${cr.r}</div><div class="xref-text">${cr.t}</div></div>`).join("");
+      body.innerHTML=items.map(cr=>`<div class="xref-item" onclick="goToVerse('${cr.id}',true)"><div class="xref-ref">${cr.r}</div><div class="xref-text">${cr.t}</div></div>`).join("");
     } else {
       body.innerHTML=`<div style="text-align:center;padding:20px 0;color:var(--ink-light);font-style:italic;font-size:14px">No cross-references recorded for this verse.</div>`;
     }
@@ -522,16 +531,21 @@ function renderBookmarks(){
 }
 
 // ── NAVIGATION ─────────────────────────────────────────────────
-function goToVerse(vId){
+function goToVerse(vId,recordFrom){
   const p=vId.split(".");
   const bIdx=books.findIndex(b=>b.id===p[0]);
   if(bIdx===-1)return;
+  const from=selectedVerseId;
+  if(recordFrom&&from&&from!==vId)navHistory.push(from);
+  else if(!recordFrom&&!backNav)navHistory=[];
+  navigating=true;
   closeSels();closePanel();
   bookIdx=bIdx;chapterNum=parseInt(p[1]);
   renderChapter();switchView("read");
   setTimeout(()=>{
     const el=document.querySelector(`.verse-block[data-id="${vId}"]`);
     if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.click();}
+    navigating=false;
   },400);
 }
 function openBookSel(){
