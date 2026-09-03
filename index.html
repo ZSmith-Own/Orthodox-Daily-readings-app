@@ -642,8 +642,14 @@ function renderDailyReadings(){
 
     if(verses.length > 0){
       verses.forEach(pv => {
-        const text = pv.content || pv.text || "";
         const num = pv.verse || "";
+        // Prefer the app's own Bible text so daily readings match the reader's
+        // translation; fall back to the lectionary's supplied text only when the
+        // verse isn't found here (e.g. Septuagint-numbered OT readings that don't
+        // align with our versification, or a book we don't carry).
+        const bId = pv.book || bookId;
+        const appText = BIBLE.books[bId]?.chapters?.[String(pv.chapter)]?.[String(pv.verse)];
+        const text = appText || pv.content || pv.text || "";
         html += `<div class="reading-verse"><span class="reading-verse-num">${num}</span><span class="reading-verse-text">${text}</span></div>`;
       });
     } else {
