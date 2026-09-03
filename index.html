@@ -650,7 +650,7 @@ function renderDailyReadings(){
         const bId = pv.book || bookId;
         const appText = BIBLE.books[bId]?.chapters?.[String(pv.chapter)]?.[String(pv.verse)];
         const text = appText || pv.content || pv.text || "";
-        html += `<div class="reading-verse"><span class="reading-verse-num">${num}</span><span class="reading-verse-text">${text}</span></div>`;
+        html += `<div class="reading-verse"><span class="reading-verse-num">${num}</span><span class="reading-verse-text" style="font-size:${fontSize}px">${text}</span></div>`;
       });
     } else {
       html += `<div style="padding:8px 0;color:var(--ink-light);font-style:italic;font-size:14px">Tap "Open ›" above to read this passage in the Bible.</div>`;
@@ -732,7 +732,7 @@ function setFont(size){
   const sizes=[15,17,20,23];
   document.querySelectorAll(".font-btn").forEach((b,i)=>b.classList.toggle("active",sizes[i]===size));
 }
-function applyFont(size){document.querySelectorAll(".vtext").forEach(el=>el.style.fontSize=size+"px");}
+function applyFont(size){document.querySelectorAll(".vtext,.reading-verse-text").forEach(el=>el.style.fontSize=size+"px");}
 
 // ── VIEW SWITCHING ─────────────────────────────────────────────
 function switchView(view){
