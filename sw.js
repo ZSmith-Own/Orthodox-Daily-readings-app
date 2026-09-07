@@ -1,5 +1,5 @@
 // Service worker — makes the app installable (Android/Chrome) and work offline.
-const CACHE = 'ob-cache-v1';
+const CACHE = 'ob-cache-v2';
 const CORE = [
   './',
   'index.html',
@@ -7,7 +7,15 @@ const CORE = [
   'icon-192.png',
   'icon-512.png',
   'apple-touch-icon.png',
-  'icon-32.png'
+  'icon-32.png',
+  'fonts/cinzel-400-latin.woff2',
+  'fonts/cinzel-400-latin-ext.woff2',
+  'fonts/crimson-pro-300-latin.woff2',
+  'fonts/crimson-pro-300-latin-ext.woff2',
+  'fonts/crimson-pro-300-italic-latin.woff2',
+  'fonts/crimson-pro-300-italic-latin-ext.woff2',
+  'fonts/im-fell-english-400-latin.woff2',
+  'fonts/im-fell-english-400-italic-latin.woff2'
 ];
 
 self.addEventListener('install', e => {
@@ -28,8 +36,8 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  // Let cross-origin requests (orthocal.info daily readings, Google Fonts) pass
-  // straight to the network so they behave exactly as before.
+  // Let cross-origin requests (orthocal.info daily readings) pass straight to
+  // the network. Fonts are now bundled locally and served same-origin.
   if (url.origin !== location.origin) return;
   // Same-origin app shell: serve from cache, fall back to network, and
   // runtime-cache anything new. Offline navigations fall back to index.html.
