@@ -384,11 +384,28 @@ window.addEventListener("load",()=>{
   applyTheme();
   applyFont(fontSize);
   updateStrip();
+  // Restore last reading position (book + chapter), if any.
+  let restoreY=0;
+  try{
+    const pos=JSON.parse(localStorage.getItem("ob_pos")||"null");
+    if(pos){
+      const bi=books.findIndex(b=>b.id===pos.b);
+      if(bi>=0){bookIdx=bi;chapterNum=Math.min(Math.max(1,pos.c||1),books[bi].chapterCount);restoreY=pos.y||0;}
+    }
+  }catch(e){}
   renderChapter();
+  // Restore scroll position within the chapter after the verses render.
+  if(restoreY){const vs=document.getElementById("verse-scroll");if(vs)vs.scrollTop=restoreY;}
+  // Keep the saved position in sync as the user scrolls.
+  document.getElementById("verse-scroll")?.addEventListener("scroll",queueSavePos,{passive:true});
 });
 
 // ── CHAPTER RENDER ─────────────────────────────────────────────
 function getVerseText(bookId,ch,v){return BIBLE.books[bookId]?.chapters?.[String(ch)]?.[String(v)]||"";}
+// Persist the reading position (book id + chapter + scroll) so the app reopens where it left off.
+function savePos(){try{localStorage.setItem("ob_pos",JSON.stringify({b:books[bookIdx].id,c:chapterNum,y:document.getElementById("verse-scroll")?.scrollTop||0}));}catch(e){}}
+let _posSaveT;
+function queueSavePos(){clearTimeout(_posSaveT);_posSaveT=setTimeout(savePos,300);}
 function renderChapter(){
   const book=books[bookIdx];
   const chData=BIBLE.books[book.id]?.chapters?.[String(chapterNum)]||{};
@@ -432,6 +449,7 @@ function renderChapter(){
     }else legend.style.display="none";
   }
   document.getElementById("prev-btn").disabled=bookIdx===0&&chapterNum===1;
+  savePos();
 }
 
 function changeChapter(dir){
